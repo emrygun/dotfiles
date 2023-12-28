@@ -1,0 +1,175 @@
+# output * bg #000000 solid_color
+hide_edge_borders smart
+set $mod Mod4
+set $window-move-amount 70px
+set $focused-screen-width $(i3-msg -t get_workspaces | jq -r 'map(select(.focused))[0].rect["width"]')
+font pango:monospace 8
+floating_modifier $mod
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# start a terminal
+bindsym $mod+Return exec st
+# start dmenu (a program launcher)
+bindsym $mod+d exec dmenu_run 
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+h move left $window-move-amount
+bindsym $mod+Shift+j move down $window-move-amount
+bindsym $mod+Shift+k move up $window-move-amount
+bindsym $mod+Shift+l move right $window-move-amount
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left $window-move-amount
+bindsym $mod+Shift+Down move down $window-move-amount
+bindsym $mod+Shift+Up move up $window-move-amount
+bindsym $mod+Shift+Right move right $window-move-amount
+
+# split in horizontal orientation
+bindsym $mod+s split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+q layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym j resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+bindsym $mod+r mode "resize"
+# resize focused window to 1/2 and 1/3 
+bindsym $mod+ctrl+shift+2 exec i3 resize set width $(expr $focused-screen-width / 2)
+bindsym $mod+ctrl+shift+3 exec i3 resize set width $(expr $focused-screen-width / 3)
+
+# Start i3bar to display a workspace bar (plus the system information i3status
+bar {
+  status_command i3status
+}
+
+# Border and titlebars
+default_border pixel 0
+for_window [class="^.*"] border pixel 1
+
+# Volume Keys
+bindsym XF86AudioRaiseVolume exec amixer -q sset Master 2%+ unmute
+bindsym XF86AudioLowerVolume  exec amixer -q sset Master 2%- unmute
+bindsym XF86AudioMute exec amixer -q sset Master toggle
+
+# Multimedia Keys
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+##### Startup Executes #####
+# Utility Junk
+exec blueman-applet
+exec xrandr --output eDP-1 --primary --mode 1366x768 --pos 2560x0 --rotate normal --output HDMI-1 --mode 2560x1440 --pos 0x0 --rotate normal
+exec jetbrains-toolbox
+exec xset b off
+exec xinput set-prop "SYNA30D9:00 06CB:CEA4 Touchpad" "libinput Tapping Enabled" 1
+
+# Mouse Sensetivity
+exec xinput --set-prop 10 299 -0.65
+exec xinput --set-prop 'Elan Touchpad' 'libinput Tapping Enabled' 1
+
+# Background Image
+exec feh --bg-fill ~/Black.png
+
+# Screenshot
+bindsym Print exec flameshot gui
+
+# Translate
+bindsym $mod+Shift+f exec xsel | trans :tr -b -no-ansi  | xargs -0 notify-send -u normal --app-name "Translate :tr" --icon=_ -t 5000 "🏳 Translate"
+
+# Screen Layout keybindings
+bindsym $mod+Shift+Control+9 exec /home/emre/.screenlayout/default.sh
+bindsym $mod+Shift+Control+0 exec /home/emre/.screenlayout/lwide.sh
